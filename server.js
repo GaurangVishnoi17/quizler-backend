@@ -1,17 +1,15 @@
 const express = require("express");
 const app = express();
-const connection = require("./db.js");
 
+// Enable below line to enable CORS
+const cors = require('cors');
+app.use(cors());  
 
-app.get("/", (req, res) => {
-    connection.query('SELECT * from persons LIMIT 1', (err, rows) => {
-        if (err) throw err;
-        console.log('The data from users table are: \n', rows);
-        res.json(rows)
-        connection.end();
-    });
-});
+const question = require('./routes/questions.js');
 
-app.listen(3000, () => {
+app.use('/api/questions', question);
+
+app.listen(3000, (err) => {
+    if(err) throw err;
     console.log('Server is running at port 3000');
 });
