@@ -1,3 +1,4 @@
 node_modules/
 apiRequest.log
 .env
+errorLogs.log

@@ -33,7 +33,7 @@ app.use("/api/questions", require("./routes/questions.js"));
 
 // Global error handler
 app.use((err, req, res, next) => {
-    console.error(err.stack);
+    fs.createWriteStream(path.join(__dirname, 'errorLogs.log'), { flags: 'a' }).write(`${new Date().toISOString()} - ${err.message}\n`);
     res.status(500).send({ error: "Something went wrong!" });
 });
 
