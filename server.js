@@ -30,6 +30,7 @@ app.use(authmid);
 
 // Routes
 app.use("/api/questions", require("./routes/questions.js"));
+app.use("/api/users", require("./routes/users.js"));
 
 // Global error handler
 app.use((err, req, res, next) => {
