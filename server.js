@@ -11,6 +11,7 @@ const corsOptions = require("./middlewares/corsOptions.js");
 // Middleware for token authentication
 const authmid = require("./middlewares/middleware.js");
 
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // create a write stream (in append mode)
