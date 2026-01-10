@@ -1,7 +1,11 @@
+require('dotenv').config();
+
 const express = require("express");
 const router = express();
 const { queryDb } = require("../common.js");
 const bcrypt = require("bcrypt");
+const jwt = require('jsonwebtoken');
+const { authenticate } = require("../middlewares/middleware.js");
 
 
 router.post('/login', async (req, res, next) => {
@@ -35,16 +39,44 @@ router.post('/login', async (req, res, next) => {
             });
         }
 
-        // 3. Remove sensitive data
-        delete user.password_hash;
+        const accessToken = jwt.sign({ userId: user.id }, process.env.ACCESS_TOKEN, { expiresIn: '15m' });
+        const refreshToken = jwt.sign({ userId: user.id }, process.env.REFRESH_TOKEN, { expiresIn: '1d' });
 
-        // 4. Success response
-        return res.status(200).json({
-            success: true,
-            user: user,
-        });
-    } catch (error) {
-        next(error);
+        // 4. Success response returns tokens
+        return res.status(200).json({ accessToken, refreshToken });
+    } catch (err) {
+        console.log(err);
+        next(err);
+    }
+});
+
+
+router.post('/refresh', (req, res) => {
+    const { refreshToken } = req.body;
+
+    jwt.verify(refreshToken, process.env.REFRESH_TOKEN, (err, decoded) => {
+        if (err) return res.sendStatus(403);
+        const newAccessToken = jwt.sign(
+            { userId: decoded.userId },
+            process.env.ACCESS_TOKEN,
+            { expiresIn: '15m' }
+        );
+        res.json({ accessToken: newAccessToken });
+    });
+});
+
+
+router.get('/profile', authenticate, async (req, res, next) => {
+    try {
+        const userId = req.user.userId;
+        const rows = await queryDb(`SELECT id, firstname, lastname, email  FROM user_table  WHERE id = ? LIMIT 1`, [userId]
+        );
+        if (!rows.length) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+        res.json(rows[0]);
+    } catch (err) {
+        next(err);
     }
 });
 

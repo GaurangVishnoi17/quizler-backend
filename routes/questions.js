@@ -1,8 +1,9 @@
 const express = require("express");
 const router = express();
-const { queryDb } = require("../common.js")
+const { queryDb } = require("../common.js");
+const { authenticate } = require("../middlewares/middleware.js");
 
-router.get("/get", (req, res, next) => {
+router.get("/get", authenticate, (req, res, next) => {
     queryDb('SELECT question, answer from question_table').then((rows) => {
         res.json(rows);
     }).catch((err) => {
