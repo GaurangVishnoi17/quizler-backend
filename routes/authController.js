@@ -42,6 +42,15 @@ router.post('/login', async (req, res, next) => {
         const accessToken = jwt.sign({ userId: user.id }, process.env.ACCESS_TOKEN, { expiresIn: '15m' });
         const refreshToken = jwt.sign({ userId: user.id }, process.env.REFRESH_TOKEN, { expiresIn: '1d' });
 
+        // Set refresh token in HTTP-only cookie. This should be done in web applications.
+        // res.cookie('refreshToken', refreshToken, {
+        //     httpOnly: true,
+        //     // secure: true,        // true in production (HTTPS)
+        //     sameSite: 'strict',  // or 'lax'
+        //     path: '/refresh',    // VERY IMPORTANT
+        //     maxAge: 24 * 60 * 60 * 1000 // 1 day
+        // });
+
         // 4. Success response returns tokens
         return res.status(200).json({ accessToken, refreshToken });
     } catch (err) {

@@ -9,7 +9,7 @@ const path = require("path");
 // CORS options
 const corsOptions = require("./middlewares/corsOptions.js");
 // Middleware for token authentication
-const { middle } = require("./middlewares/middleware.js");
+const { middle, authenticate } = require("./middlewares/middleware.js");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -27,11 +27,11 @@ app.use(morgan("combined", { stream: accessLogStream })); // Log to file
 app.use(cors(corsOptions)); // corsOptions should be defined in a separate file
 
 // Middleware
-app.use(middle);
+app.use("/api/auth", require("./routes/authController.js"));
+app.use(authenticate);
 
 // Routes
 app.use("/api/questions", require("./routes/questions.js"));
-app.use("/api/users", require("./routes/users.js"));
 
 // Route not found handler
 app.use((req, res, next) => {
