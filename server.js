@@ -31,6 +31,7 @@ app.use("/api/auth", require("./routes/authController.js"));
 app.use(authenticate);
 
 // Routes
+app.use("/api/users", require("./routes/users.js"));
 app.use("/api/questions", require("./routes/questions.js"));
 
 // Route not found handler
