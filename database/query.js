@@ -1,4 +1,4 @@
-const connection = require('./db.js');
+const connection = require('../config/db.js');
 
 // Function to execute parameterized queries.
 function queryDb(query, params = []) {

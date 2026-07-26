@@ -2,7 +2,7 @@ require('dotenv').config();
 
 const express = require("express");
 const router = express();
-const { queryDb } = require("../common.js");
+const { queryDb } = require("../database/query.js");
 const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
 const { authenticate } = require("../middlewares/middleware.js");
