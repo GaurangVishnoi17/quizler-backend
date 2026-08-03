@@ -6,9 +6,9 @@ const { queryDb } = require("../database/query.js");
 const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
 const { authenticate } = require("../middlewares/middleware.js");
+const { validateLogin, handleValidationErrors } = require("../middlewares/validation");
 
-
-router.post('/login', async (req, res, next) => {
+router.post('/login', validateLogin, handleValidationErrors, async (req, res, next) => {
     try {
         const { email, password } = req.body;
         // 1. Validate input
