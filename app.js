@@ -4,6 +4,7 @@ const helmet = require("helmet");
 const morgan = require("morgan");
 const fs = require("fs");
 const path = require("path");
+const { swaggerUi, swaggerSpec } = require("./config/swagger");
 
 // Create express app
 const app = express();
@@ -29,6 +30,8 @@ app.use(morgan("combined", { stream: accessLogStream })); // Log to file
 
 // Enable CORS with specific origin
 app.use(cors(corsOptions)); // corsOptions should be defined in a separate file
+
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Public routes
 app.use("/api/auth", require("./routes/authController.js"));
