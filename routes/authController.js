@@ -8,21 +8,50 @@ const jwt = require('jsonwebtoken');
 const { authenticate } = require("../middlewares/middleware.js");
 const { validateLogin, handleValidationErrors } = require("../middlewares/validation");
 
+
+/**
+ * @swagger
+ * /api/auth/login:
+ *   post:
+ *     summary: Authenticate a user
+ *     description: Authenticates a user using email and password and returns JWT access and refresh tokens.
+ *     tags:
+ *       - Authentication
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/LoginRequest'
+ *     responses:
+ *       '200':
+ *         description: Login successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/LoginResponse'
+ *       '400':
+ *         description: Validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ValidationErrorResponse'
+ *       '401':
+ *         description: Invalid email or password
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
 router.post('/login', validateLogin, handleValidationErrors, async (req, res, next) => {
     try {
         const { email, password } = req.body;
-        // 1. Validate input
-        if (!email || !password) {
-            return res.status(400).json({
-                error: 'Email and password are required',
-            });
-        }
 
-        // 2. Use parameterized query (prevents SQL injection)
+        // 1. Use parameterized query (prevents SQL injection)
         const query = `SELECT id, firstname, lastname, email, password_hash FROM user_table WHERE email = ?  LIMIT 1`;
         const rows = await queryDb(query, [email]);
 
-        // 3. Check if user exists
+        // 2. Check if user exists
         if (rows.length === 0) {
             return res.status(401).json({
                 error: 'Invalid email or password',
@@ -31,7 +60,7 @@ router.post('/login', validateLogin, handleValidationErrors, async (req, res, ne
 
         const user = rows[0];
 
-        // 4. Compare password with hash
+        // 3. Compare password with hash
         const isMatch = await bcrypt.compare(password, user.password_hash);
         if (!isMatch) {
             return res.status(401).json({
