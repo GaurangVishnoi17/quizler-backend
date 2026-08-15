@@ -9,6 +9,17 @@ const login = async (req, res, next) => {
     }
 };
 
+
+const refresh = async (req, res, next) => {
+    try {
+        const result = await authService.refresh(req.body);
+        return res.status(200).json(result);
+    } catch (err) {
+        next(err);
+    }
+}
+
 module.exports = {
-    login
+    login,
+    refresh
 };
