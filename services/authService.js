@@ -2,6 +2,7 @@ const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
 const { queryDb } = require("../database/query.js");
 
+
 const login = async ({ email, password }) => {
 
     const rows = await queryDb(
@@ -37,6 +38,26 @@ const login = async ({ email, password }) => {
     return { accessToken, refreshToken };
 };
 
+
+const refresh = async ({ refreshToken }) => {
+    const result = await new Promise((resolve, reject) => {
+        jwt.verify(refreshToken, process.env.REFRESH_TOKEN, (err, decoded) => {
+            if (err) {
+                reject(err);
+                return;
+            }
+            const newAccessToken = jwt.sign(
+                { userId: decoded.userId },
+                process.env.ACCESS_TOKEN,
+                { expiresIn: '15m' }
+            );
+            resolve({ accessToken: newAccessToken });
+        });
+    });
+    return result;
+};
+
+
 module.exports = {
-    login
+    login, refresh
 };

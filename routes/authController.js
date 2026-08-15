@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const { login } = require("../controllers/authController");
+const { login, refresh } = require("../controllers/authController");
 const { validateLogin, handleValidationErrors } = require("../middlewares/validation");
 const jwt = require("jsonwebtoken");
 
@@ -41,26 +41,10 @@ const jwt = require("jsonwebtoken");
  *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.post(
-    "/login",
-    validateLogin,
-    handleValidationErrors,
-    login
-);
+    "/login", validateLogin, handleValidationErrors, login);
 
 
-router.post('/refresh', (req, res) => {
-    const { refreshToken } = req.body;
-
-    jwt.verify(refreshToken, process.env.REFRESH_TOKEN, (err, decoded) => {
-        if (err) return res.sendStatus(403);
-        const newAccessToken = jwt.sign(
-            { userId: decoded.userId },
-            process.env.ACCESS_TOKEN,
-            { expiresIn: '15m' }
-        );
-        res.json({ accessToken: newAccessToken });
-    });
-});
+router.post('/refresh', refresh);
 
 
 module.exports = router
