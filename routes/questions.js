@@ -1,8 +1,6 @@
 const express = require("express");
 const router = express();
-const { queryDb } = require("../database/query.js");
-const { authenticate } = require("../middlewares/middleware.js");
-
+const { getQuestions } = require("../controllers/questionController");
 
 /**
  * @swagger
@@ -36,15 +34,7 @@ const { authenticate } = require("../middlewares/middleware.js");
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.get("/get", async (req, res, next) => {
-    try {
-        const rows = await queryDb("SELECT question, answer FROM question_table");
-        return res.json(rows);
-    } catch (err) {
-        // Forward database errors to the global error handler.
-        next(err);
-    }
-});
+router.get("/get", getQuestions);
 
 
 module.exports = router
