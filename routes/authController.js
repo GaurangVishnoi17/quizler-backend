@@ -40,8 +40,7 @@ const jwt = require("jsonwebtoken");
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.post(
-    "/login", validateLogin, handleValidationErrors, login);
+router.post("/login", validateLogin, handleValidationErrors, login);
 
 
 router.post('/refresh', refresh);

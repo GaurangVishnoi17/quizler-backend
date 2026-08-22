@@ -52,8 +52,24 @@ app.use((req, res) => {
 
 // Global error handler
 app.use((err, req, res, next) => {
-    fs.createWriteStream(path.join(__dirname, 'errorLogs.log'), { flags: 'a' }).write(`${new Date().toISOString()} - ${err.message}\n`);
-    res.status(500).json({ error: "Something went wrong!" });
+    const statusCode = err.statusCode || 500;
+
+    // Log complete error details on the server
+    fs.appendFile(path.join(__dirname, "errorLogs.log"), `${new Date().toISOString()} - ${err.stack}\n`, (logError) => {
+        if (logError) {
+            console.error("Failed to write error log:", logError);
+        }
+    }
+    );
+
+    // Send safe response to client
+    const response = {
+        error: err.isOperational ? err.message : "Internal Server Error"
+    };
+    if (err.isOperational && err.details) {
+        response.details = err.details;
+    }
+    res.status(statusCode).json(response);
 });
 
 module.exports = app;

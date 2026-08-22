@@ -1,12 +1,14 @@
 const allowedOrigins = ['http://localhost'];
+const AppError = require("../utils/AppError.js");
+
 
 const corsOptions = {
     origin: (origin, callback) => {
-        console.log('CORS Origin:', origin);
+        console.log("CORS Origin:", origin);
         if (!origin || allowedOrigins.some(o => origin.includes(o))) {
-            callback(null, true); // Allow request
+            callback(null, true);
         } else {
-            callback(new Error('Not allowed by CORS')); // Block request
+            callback(new AppError("CORS: Origin not allowed", 403));
         }
     },
     credentials: true, // <- Very important if using cookies or auth headers
