@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
 const { queryDb } = require("../database/query.js");
+const AppError = require("../utils/AppError");
 
 
 const login = async ({ email, password }) => {
@@ -14,14 +15,15 @@ const login = async ({ email, password }) => {
     );
 
     if (rows.length === 0) {
-        throw new Error("Invalid email or password");
+        throw new AppError("Invalid email or password", 401);
     }
-
+    
     const user = rows[0];
-
+    
     const isMatch = await bcrypt.compare(password, user.password_hash);
     if (!isMatch) {
-        throw new Error("Invalid email or password");
+        throw new AppError("Invalid email or password", 401);
+
     }
 
     const accessToken = jwt.sign(
